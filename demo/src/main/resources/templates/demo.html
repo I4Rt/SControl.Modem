@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    body{
+        height: 100%;
+        width: 100%;
+
+        display: flex;
+        justify-content: center;
+        align-self: center;
+    }
+    form{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+    }
+    button{
+        width: 100%;
+        border-radius: 5px;
+        height: 24px;
+    }
+
+    .row{
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+    input{
+        min-width: 280px;
+    }
+
+    input{
+        width: auto;
+    }
+    .sentInfo{
+        margin-top: 15px;
+    }
+    .redirect{
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+    }
+    .mainCnt{
+        width: 350px;
+    }
+
+</style>
+<body>
+
+<div class="mainCnt">
+    <form class="sender" th:action="@{/send}" th:object="${data}" method="post">
+        <div class="row">Send: <input class="mainTextInput" th:field="*{rowData}"></div>
+        <button type="submit" class="sentBtn">Отправить</button>
+    </form>
+
+    <div class="sentInfo" th:utext="${answer}"></div>
+</div>
+<a class="redirect" href="/">Назад <--</a>
+</body>
+</html>

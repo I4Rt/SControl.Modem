@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    .row{
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+    .col{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .col>*, .row>*{
+        margin: 5px;
+    }
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+
+
+    function sendRequest(to, type, message){
+        let feedback;
+        fetch(to, {
+            method: type,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: message,
+        })
+            .then((response) => {
+                scan_results = response;
+                console.log(response);
+
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+    function open_script(id){
+        sendRequest("getScript", "POST", id)
+    }
+</script>
+<body>
+<div class="col" width="100%">
+    <div class="row">
+        <a href="/addRegister"><button  id="addRegister">Добавить регистр</button></a>
+        <a href="/addMode"><button  id="addMode">Добавить режим</button></a>
+        <a href="/addScript"><button  id="addScript">Добавить сценарий</button></a>
+    </div>
+    <div>
+        <div class="col" th:each="avaliableScript : ${scripts}">
+            <div class="row" th:attr="id=|script_${avaliableScript.getId}">
+                <b th:text="${avaliableScript.getName}">
+                    Сценарий 1
+                </b>
+                <a th:attr="href=|/getScript/${avaliableScript.getId}|"><button th:attr="id=|open_script_${avaliableScript.getId}|, onclick=|open_script(${avaliableScript.getId})|">
+                    Подробнее / Изменить
+                </button></a>
+
+                <button th:attr="id=|run_script_${avaliableScript.getId}|">
+                    Запустить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

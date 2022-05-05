@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    .row{
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+    .col{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .col>*, .row>*{
+        margin: 5px;
+    }
+    .redirect{
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+    }
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script>
+
+    /*<![CDATA[*/
+    data = JSON.parse('[[${scriptJson}]]'.replaceAll('&quot;', '"'))
+    console.log(data);
+
+    /*]]>*/
+
+
+
+    function sendRequest(to, type, message){
+        let feedback;
+        fetch(to, {
+            method: type,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: message,
+        })
+            .then((response) => {
+                scan_results = response;
+                console.log(response);
+                console.log(response.text().then(function (data){
+                    $(".answer").html(data)
+                }));
+                /*
+                if(to == "startScan"){
+                    console.log(response.text().then(function (data){
+                        $(".text_info_cnt").html(data)
+                    }));
+                    $(".represent_loading").toggleClass("hidden");
+                    $(".represent").toggleClass("hidden");
+                    $("#log").append("<text>Сканирование окончено.</text>")
+                }
+                if(to == "rebootLidar"){
+                    $("#lidar_need_reboot").addClass("hidden");
+                    $("#lidar_need_config").removeClass("hidden");
+                    $("#lidar_ready").addClass("hidden");
+                    $("#lidar_wait_answer").addClass("hidden");
+                    $("#reboot").prop( "disabled", false );
+                    $("#configure").prop( "disabled", false );
+                    $("#start").prop( "disabled", true );
+                    $("#log").append("<text>Lidar перезапущен.</text>")
+
+                }
+                if(to == "configureLidar"){
+                    $("#lidar_need_reboot").addClass("hidden");
+                    $("#lidar_need_config").addClass("hidden");
+                    $("#lidar_ready").removeClass("hidden");
+                    $("#lidar_wait_answer").addClass("hidden");
+                    $("#reboot").prop( "disabled", false );
+                    $("#configure").prop( "disabled", false );
+                    $("#start").prop( "disabled", false );
+                    $("#log").append("<text>Lidar успешно сконфигурирован.</text>")
+                }
+
+                if(to == "runCart"){
+                    $("#log").append("<text>Каретка находится в конде рельс.</text>")
+                }
+                if(to == "stopCart"){
+                    $("#log").append("<text>Каретка остановлена.</text>")
+                }
+                if(to == "resetCart"){
+                    $("#log").append("<text>Каретка находится в конде рельс.</text>")
+                }
+                */
+
+
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+
+    function addModeToScript(id){
+        let class_name = "#".concat(id);
+        $(".added").append("<button id=" + "'remove_" + id +"'" + " onclick=\"removeMode(\'remove_" + id + "\')\" >" +
+            $(class_name).html() +
+            "</button>"
+        )
+        console.log(data["modes"])
+        let temp_arr = data["modes"];
+        temp_arr.push(parseInt(id));
+        data["modes"] = temp_arr;
+        console.log(data["modes"])
+    }
+    function removeMode(id){
+        console.log("removing");
+        $("#".concat(id)).remove()
+        console.log(data["modes"])
+        let temp_arr = data["modes"];
+        temp_arr.pop(parseInt(id.replace("remove_", "")));
+        data["modes"] = temp_arr;
+        //console.log(data["modes"])
+    }
+
+    function save(){
+        let name = $("#script_name").val()
+        if (name != null){
+            data["name"] = name;
+            console.log("saving...");
+            console.log(JSON.stringify(data));
+            sendRequest("/updateScript", "POST", JSON.stringify(data))
+        }
+        else{
+            $(".answer").html("Введите название сценария")
+        }
+
+    }
+
+
+</script>
+<body>
+<form action="" method="post" th:object="${script}">
+    <div class="row"><h2>Сценарий </h2><input id="script_name" required type="text" th:field="*{name}"></div>
+</form>
+
+    <div class="row">
+
+        <div class="col" style="min-width: 50%; border-right: 2px dotted #000000">
+            <h4>Доступные режимы</h4>
+                <div class="col" th:each="avaliableMode : ${allModes}">
+                    <button th:attr="onclick=|addModeToScript(${avaliableMode.getId})|" th:id="${avaliableMode.getId}"><b>Добавить <text th:text="${avaliableMode.getName}"></text> </b></button>
+                </div>
+        </div>
+        <div  class="col added" style="min-width: 50%">
+            <h4>Используемые режимы</h4>
+                <div class="col" th:each="usedMode : ${allModesInUse}">
+                    <button th:attr="onclick=|removeMode('remove_${usedMode.getId}')|, id=|remove_${usedMode.getId}|"><b><text th:text="${usedMode.getName}"></text> </b></button>
+                </div>
+        </div>
+    </div>
+    <div class="row answer"></div>
+    <div class="row">
+        <button onclick="save()" id="save">Сохранить</button>
+    </div>
+
+<a class="redirect" href="/main">Назад <--</a>
+</body>
+</html>

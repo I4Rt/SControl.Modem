@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    body{
+        height: 100%;
+        width: 100%;
+
+        display: flex;
+        justify-content: center;
+        align-self: center;
+    }
+    form{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+    }
+    button{
+        width: 100%;
+        border-radius: 5px;
+        height: 24px;
+    }
+
+    .row{
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+    input{
+        min-width: 280px;
+    }
+
+    input{
+        width: auto;
+    }
+    .sentInfo{
+        margin-top: 15px;
+    }
+    .redirect{
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+    }
+    .mainCnt{
+        width: 350px;
+    }
+
+</style>
+<body>
+
+<div class="mainCnt">
+    <form class="sender" th:action="@{/addRegister}" th:object="${register}" method="post">
+        <div class="row">Имя: <input class="mainTextInput" th:field="*{name}"></div>
+        <div class="row">Значение <input class="mainTextInput" th:field="*{input}"></div>
+        <button type="submit" class="sentBtn">Создать</button>
+    </form>
+
+    <div class="sentInfo" th:utext="${answer}"></div>
+</div>
+<a class="redirect" href="/main">Назад <--</a>
+</body>
+</html>
