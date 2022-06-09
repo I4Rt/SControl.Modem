@@ -143,8 +143,8 @@
     <div class="row"><h2>Режим </h2><input id="mode_name" required type="text" th:field="*{name}"></div>
     <div class="row"><h2>Значение регистра режима </h2><input id="mode_value" required type="text" th:field="*{modeValue}"></div>
 </form>
-
-    <div class="row">
+<div class="row">
+    <div class="row" style="width: 60%;">
 
         <div class="col" style="min-width: 50%; border-right: 2px dotted #000000">
             <h4>Доступные регистры</h4>
@@ -162,10 +162,22 @@
 
         </div>
     </div>
-    <div class="row answer"></div>
-    <div class="row">
-        <button onclick="save()" id="save">Сохранить</button>
+    <div class="row" style="width: 40%; border-left: 2px dashed;">
+
+        <div class="col" >
+            <h3>Параметры тестирования</h3>
+            <div class="row">
+
+            </div>
+        </div>
+
     </div>
+</div>
+
+<div class="row answer"></div>
+<div class="row">
+    <button onclick="save()" id="save">Сохранить</button>
+</div>
 
 <a class="redirect" href="/main">Назад <--</a>
 </body>
