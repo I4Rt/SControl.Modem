@@ -1,21 +1,12 @@
 package com.i4rt.demo.controllers;
 
-import com.i4rt.demo.interfaces.DataRepo;
-import com.i4rt.demo.interfaces.ModeRepo;
-import com.i4rt.demo.interfaces.RegisterRepo;
-import com.i4rt.demo.interfaces.ScriptRepo;
-import com.i4rt.demo.model.Data;
-import com.i4rt.demo.model.Mode;
-import com.i4rt.demo.model.Register;
-import com.i4rt.demo.model.Script;
+import com.i4rt.demo.interfaces.*;
+import com.i4rt.demo.model.*;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -34,13 +25,18 @@ public class MainController {
     private final ModeRepo modeRepo;
     @Autowired
     private final ScriptRepo scriptRepo;
+    @Autowired
+    private final MDKRPKTRepo mdkrpktRepo;
 
 
-    public MainController(DataRepo dataRepo, RegisterRepo registerRepo, ModeRepo modeRepo, ScriptRepo scriptRepo) {
+
+
+    public MainController(DataRepo dataRepo, RegisterRepo registerRepo, ModeRepo modeRepo, ScriptRepo scriptRepo, MDKRPKTRepo mdkrpktRepo) {
         this.dataRepo = dataRepo;
         this.registerRepo = registerRepo;
         this.modeRepo = modeRepo;
         this.scriptRepo = scriptRepo;
+        this.mdkrpktRepo = mdkrpktRepo;
     }
 
 
@@ -52,6 +48,7 @@ public class MainController {
     @GetMapping("/main")
     public String getMain(Model model) {
         model.addAttribute("scripts", scriptRepo.findAll());
+        model.addAttribute("modes", modeRepo.findAll());
         return "main";
     }
 
@@ -80,7 +77,10 @@ public class MainController {
     @PostMapping("/addRegister")
     public String createRegister(@ModelAttribute(name = "register") @Valid Register register, Model model) throws IOException {
         System.out.println(register);
-        register.setData(new Data(register.getInput()));
+        DataBin dataBin = new DataBin(register.getPosition(), register.getInput(), register.getMode());
+
+        register.setData(new Data(dataBin.getResultData()));
+        System.out.println(register.toString());
 
         registerRepo.save(register);
         String answer = "Регистр с имененм " + register.getName() + " успешно создан!";
@@ -103,11 +103,14 @@ public class MainController {
 
         JSONObject modeJson = newMode.getJson();
 
+        List<Register> allModemRegisters = registerRepo.getRegistersByMode("modem");
+        List<Register> allChannelRegisters = registerRepo.getRegistersByMode("gadget");
 
 
-        List<Register> allRegisters = registerRepo.findAll();
+        //List<Register> allRegisters = registerRepo.findAll();
         model.addAttribute("modeJson",  modeJson);
-        model.addAttribute("allRegisters",  allRegisters);
+        model.addAttribute("allModemRegisters",  allModemRegisters);
+        model.addAttribute("allChannelRegisters",  allChannelRegisters);
         model.addAttribute("allRegistersInUse",  allRegistersInUse);
         return "addMode";
     }
@@ -134,7 +137,7 @@ public class MainController {
     }
 
     @GetMapping("/getScript/{id}")
-    public String getUser(@PathVariable Long id, Model model) {
+    public String getScript(@PathVariable Long id, Model model) {
 
         Script newScript = scriptRepo.getById(id);
         model.addAttribute("script", newScript);
@@ -151,6 +154,78 @@ public class MainController {
         model.addAttribute("allModesInUse",  allModesInUse);
 
         return "scriptInfo";
+    }
+
+    @GetMapping("/getMode/{id}")
+    public String getMode(@PathVariable Long id, Model model) {
+
+
+        Mode mode = modeRepo.getById(id);
+        model.addAttribute("mode", mode);
+        List<Object> allRegistersInUse = Arrays.asList(mode.getRegisters().toArray());
+        /*
+        System.out.println("\n\n\n");
+        System.out.println(allRegistersInUse);
+        System.out.println("\n\n\n");
+        */
+        JSONObject modeJson = mode.getJson();
+
+
+
+        List<Register> allModemRegisters = registerRepo.getRegistersByMode("modem");
+        List<Register> allChannelRegisters = registerRepo.getRegistersByMode("gadget");
+        model.addAttribute("modeJson",  modeJson);
+        model.addAttribute("allModemRegisters",  allModemRegisters);
+        model.addAttribute("allChannelRegisters",  allChannelRegisters);
+        model.addAttribute("allRegistersInUse",  allRegistersInUse);
+
+        return "modeInfo";
+    }
+
+    @GetMapping("/demo2")
+    private String createNewMode(Model model){
+        MDKRPKT mode1 = new MDKRPKT();
+        mode1.setCelebrating(false);
+
+        List<MDKRPKT> allModes1 = mdkrpktRepo.findAll();
+
+        model.addAttribute("mode1", mode1);
+        model.addAttribute("allModes1", allModes1);
+
+        return "allModes";
+    }
+
+    @PostMapping("/createMDKRPKT")
+    private String saveMDKRPKT(Model model, @ModelAttribute("mode1") @Valid MDKRPKT mode1){
+        if(mdkrpktRepo.getByName(mode1.getName()) != null){
+            model.addAttribute("answer", "Режим с таким именем уже существует");
+        }
+        else{
+            mode1.setRegister13RowData(mode1.getRegister6RowData());
+            mode1.setRegister14RowData(mode1.getRegister7RowData());
+
+            mode1.setRegister15RowData(mode1.getRegister8RowData());
+            mode1.setRegister16RowData(mode1.getRegister9RowData());
+            mdkrpktRepo.save(mode1);
+        }
+        return "redirect:/demo2";
+    }
+
+    @GetMapping("/getMDKRPKT")
+    private String getMDKRPKT(@RequestParam(value = "id", required = true) Long id, Model model){
+        MDKRPKT mode1 = mdkrpktRepo.getById(id);
+        System.out.println(mode1);
+
+        List<MDKRPKT> allModes1 = mdkrpktRepo.findAll();
+
+        DataBin dataBin = new DataBin(1, mode1.getRegister1RowData(), "modem");
+
+        System.out.println(dataBin);
+
+        model.addAttribute("mode1", mode1);
+        model.addAttribute("allModes1", allModes1);
+
+        return "allModes";
     }
 
 }

@@ -130,12 +130,16 @@
             data["modeValue"] = modeValue;
             console.log("saving...");
             console.log(JSON.stringify(data));
-            sendRequest("saveMode", "POST", JSON.stringify(data))
+            sendRequest("/updateMode", "POST", JSON.stringify(data))
         }
         else{
             $(".answer").html("Введите название режима")
         }
 
+    }
+
+    function deleteMode(){
+        sendRequest("/deleteMode", "POST", data["id"])
     }
 </script>
 <body>
@@ -145,26 +149,28 @@
 </form>
 
     <div class="row">
-
-        <div class="col" style="min-width: 50%; border-right: 2px dotted #000000">
+        <div class="col" style="min-width: 50%; border-right: 2px dotted #000000; max-height: 650px; overflow-y: auto">
             <h4>Доступные регистры</h4>
-            <span>Регистры модема</span>
-            <div class="col" th:each="avaliableRegister : ${allModemRegisters}">
-                <button th:attr="onclick=|addRegisterToMode(${avaliableRegister.getId})|" th:id="${avaliableRegister.getId}"><b>Добавить <text th:text="${avaliableRegister.getName}"></text> </b><text th:text="${avaliableRegister.getInput}"></text></button>
-            </div>
-            <span>Регистры канала</span>
-            <div class="col" th:each="avaliableRegister : ${allChannelRegisters}">
-                <button th:attr="onclick=|addRegisterToMode(${avaliableRegister.getId})|" th:id="${avaliableRegister.getId}"><b>Добавить <text th:text="${avaliableRegister.getName}"></text> </b><text th:text="${avaliableRegister.getInput}"></text></button>
-            </div>
+                <span>Регистры модема</span>
+                <div class="col" th:each="avaliableRegister : ${allModemRegisters}">
+                    <button th:attr="onclick=|addRegisterToMode(${avaliableRegister.getId})|" th:id="${avaliableRegister.getId}"><b>Добавить <text th:text="${avaliableRegister.getName}"></text> </b><text th:text="${avaliableRegister.getInput}"></text></button>
+                </div>
+                <span>Регистры канала</span>
+                <div class="col" th:each="avaliableRegister : ${allChannelRegisters}">
+                    <button th:attr="onclick=|addRegisterToMode(${avaliableRegister.getId})|" th:id="${avaliableRegister.getId}"><b>Добавить <text th:text="${avaliableRegister.getName}"></text> </b><text th:text="${avaliableRegister.getInput}"></text></button>
+                </div>
         </div>
-        <div  class="col added" style="min-width: 50%">
+        <div  class="col added" style="min-width: 50%; max-height: 650px; overflow-y: auto">
             <h4>Используемые регистры</h4>
-
+            <div class="col" th:each="usedRegister : ${allRegistersInUse}">
+                <button id="remove_id" th:attr="onclick=|removeRegister('remove_${usedRegister.getId}')|, id=|remove_${usedRegister.getId}|"><b><text th:text="${usedRegister.getName}"></text></b> <text th:text="${usedRegister.getInput}"></text></button>
+            </div>
         </div>
     </div>
     <div class="row answer"></div>
     <div class="row">
         <button onclick="save()" id="save">Сохранить</button>
+        <button onclick="deleteMode()" id="delete">Удалить</button>
     </div>
 
 <a class="redirect" href="/main">Назад <--</a>

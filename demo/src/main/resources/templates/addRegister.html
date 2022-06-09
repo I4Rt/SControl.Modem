@@ -47,7 +47,7 @@
         bottom: 10px;
     }
     .mainCnt{
-        width: 350px;
+        width: 400px;
     }
 
 </style>
@@ -57,6 +57,16 @@
     <form class="sender" th:action="@{/addRegister}" th:object="${register}" method="post">
         <div class="row">Имя: <input class="mainTextInput" th:field="*{name}"></div>
         <div class="row">Значение <input class="mainTextInput" th:field="*{input}"></div>
+        <div class="row">Положение <input class="mainTextInput" th:field="*{position}"></div>
+
+        <div class="row">Timeout <input class="mainTextInput" th:field="*{timeout}"></div>
+        <div class="row">
+            Устройство
+            <select style="min-width: 288px; min-height: 22px;" th:field="*{mode}">
+                <option th:value="'modem'" th:text="Модем">Модем</option>
+                <option th:value="'gadget'" th:text="Прибор">Прибор</option>
+            </select>
+        </div>
         <button type="submit" class="sentBtn">Создать</button>
     </form>
 

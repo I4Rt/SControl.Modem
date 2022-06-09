@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Demo 2</title>
+</head>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<style>
+    .nav{
+        width: 100%;
+    }
+    .nav-item{
+        width: 25%;
+    }
+    .nav-link{
+        width: 100%;
+        color:#777d87;
+    }
+    .nav-link.active{
+        color: #646972;
+        font-weight: bold;
+    }
+    .tab-pane{
+        padding: 10px;
+    }
+    .log{
+        font-size: 12px;
+    }
+    .main_editor_mode1 h6{
+        margin-left: -8px;
+    }
+
+    .adder_register_info{
+        font-size: 11px;
+    }
+
+    .reg_input{
+        height: 28px;
+        margin-top: 0px;
+        text-align: center;
+        letter-spacing: 1px;
+    }
+    .with_margin{
+        margin-bottom: 10px;
+    }
+    .border{
+        border-radius: 5px;
+    }
+    ::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background-color: rgba(131, 131, 131, 0.3);
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        background-color: rgba(131, 131, 131, 0.7);
+
+    }
+</style>
+
+
+<body>
+<nav class="navbar navbar-dark bg-dark">
+    <span style="margin-left: 15px" class="navbar-brand mb-0 h1">SControl.Modem</span>
+    <div style="margin-right: 15px" class="form-inline">
+        <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Reboot</button>
+    </div>
+    
+</nav>
+<ul class="nav nav-tabs justify-content-center" id="modeNavigationTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="mode1-tab" data-bs-toggle="tab" data-bs-target="#mode1" type="button" role="tab" aria-controls="mode1" aria-selected="true">МДКРПКТ</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="mode2-tab" data-bs-toggle="tab" data-bs-target="#mode2" type="button" role="tab" aria-controls="mode2" aria-selected="false">МДЧР ПКТ</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="mode3-tab" data-bs-toggle="tab" data-bs-target="#mode3" type="button" role="tab" aria-controls="mode3" aria-selected="false">ПР абонентский</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="mode4-tab" data-bs-toggle="tab" data-bs-target="#mode4" type="button" role="tab" aria-controls="mode4" aria-selected="false">ЕССС2 ОСБ РАТС закреп.</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="modeNavigationTabContent">
+    <div class="tab-pane fade show active" id="mode1" role="tabpanel" aria-labelledby="mode1-tab">
+        <div  class="container">
+            <div class="row">
+                <form style="height: 675px" class="col right_panels_mode1" id="MDKRPKT" th:object="${mode1}">
+                    <div style="height: 15%" class="col justify-content-start">
+                        <div  class="row">
+                            <div class="col">
+                                <h4>МДКРПКТ</h4>
+                            </div>
+                        </div>
+                        <div class="row buttons_row_mode1">
+                            <div class="col-6">
+                                <input required class=" form-control mr-sm-2" id="name" placeholder="Введите название конфигурации" aria-label="Название конфигурации" th:field="*{name}">
+                            </div>
+                            <div class="col-3">
+                                <button style="width: 100%" class="col-3 btn btn-outline-secondary" type="submit" form="MDKRPKT" formaction="/createMDKRPKT" formmethod="post">Сохранить</button>
+                            </div>
+                            <div class="col-3">
+                                <button style="width: 100%" class="col-3 btn btn-outline-success">Запустить</button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div style="height: 85%" class="row">
+                        <div style="height: 100%" class="col">
+                            <div style="padding: 10px" class="h-75 border overflow-auto main_editor_mode1">
+                                <div class="container">
+                                    <h6>Прибор</h6>
+                                    <div style="list-style-type: none" class="row with_margin">
+                                        <div class="col-5">
+                                            <div>Регистр 1: Режимные параметры</div>
+                                            <div class="adder_register_info">D1: Наличие инверсии в стволе с ПР (Влияет на инверсию спектра на приём, но для ПБМ выполнять инверсию не нужно. Не влияет на инверсию спектра на передачу)</div>
+                                        </div>
+                                        <div style="height: auto" class="col">
+                                            <div class="row">
+                                                <input required class="reg_input form-control mr-sm-2" id="mode1_reg1" placeholder="0000 0000 0000 0000" aria-label="Значение регистра" th:field="*{register1RowData}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div style="list-style-type: none" class="row with_margin">
+                                        <div class="col-5">
+                                            <div>Регистр 2, 3: Смещение частоты от начала диапазона</div>
+                                            <div class="adder_register_info">Регистр 2 – старший, передаем частоту</div>
+                                        </div>
+                                        <div style="height: auto" class="col">
+                                            <div class="row justify-content-between">
+                                                <input required style="width: 49%;" class="reg_input form-control mr-sm-2" id="mode1_reg2" placeholder="0000 0000 0000 0000" aria-label="Значение регистра" th:field="*{register2RowData}">
+                                                <input required style="width: 49%;" class="reg_input form-control mr-sm-2" id="mode1_reg3" placeholder="0000 0000 0000 0000" aria-label="Значение регистра" th:field="*{register3RowData}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div style="list-style-type: none" class="row with_margin">
+                                        <div class="col-5">
+                                            <div>Регистр 4: Аттенюатор, запрет излучения (ГТС)</div>
+                                            <div class="adder_register_info">D0 - D13: Код значения аттенюатора<br>D15: Код значения аттенюатора<br>Ослабление, вводимое аттенюатором, вычисляется следующим образом:Атт=КОД×0,5, где Атт – ослабление, дБ;</div>
+                                        </div>
+                                        <div style="height: auto" class="col">
+                                            <div class="row">
+                                                <input required class="reg_input form-control mr-sm-2" id="mode1_reg4" placeholder="0000 0000 0000 0000" aria-label="Значение регистра" th:field="*{register4RowData}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div style="list-style-type: none" class="row with_margin">
+                                        <div class="col-5">
+                                            <div>Регистр 5: Код Доплера на передачу, частотообразование в конвертере ПРД</div>
+                                            <div class="adder_register_info">D0 - D11: Код Доплера на передачу, приведенный к 100 МГц (в дополнительном коде)<br>Код Доплера рассчитывается по формуле: D = ∆FD, где ∆FD – частотная поправка для 100 МГц, рассчитанная по формуле: ∆FD = (±1.2*10-5)*108 Гц. Для 100 МГц максимальная поправка: ∆F1200 = 1200 Гц. Шаг частотной поправки для 100МГц: ∆F1200 / 1200 = 1 Гц. Расчет и запись кода Доплера производится ПАУ 1 раз в минуту.</div>
+                                        </div>
+                                        <div style="height: auto" class="col">
+                                            <div class="row">
+                                                <input required class="reg_input form-control mr-sm-2" id="mode1_reg5" placeholder="0000 0000 0000 0000" aria-label="Значение регистра" th:field="*{register5RowData}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div style="list-style-type: none" class="row with_margin">
+                                        <div class="col-5">
+                                            <div>Регистр 6, 7: Частота гетеродина конвертора</div>
+                                            <div class="adder_register_info">Регистр 6 – старший, передаем частоту</div>
+                                        </div>
+                                        <div style="height: auto" class="col">
+                                            <div class="row justify-content-between">
+                                                <input required style="width: 49%;" class="reg_input form-control mr-sm-2" id="mode1_reg6" placeholder="0000 0000 0000 0000" aria-label="Значение регистра" th:field="*{register6RowData}">
+                                                <input required style="width: 49%;" class="reg_input form-control mr-sm-2" id="mode1_reg7" placeholder="0000 0000 0000 0000" aria-label="Значение регистра" th:field="*{register7RowData}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div style="list-style-type: none" class="row with_margin">
+                                        <div class="col-5">
+                                            <div>Регистр 8, 9: Частота ВЧ начала диапазона</div>
+                                            <div class="adder_register_info">Регистр 8 – старший, передаем частоту<br>Частота ПЧ рассчитывается следующим образом:</div>
+                                        </div>
+                                        <div style="height: auto" class="col">
+                                            <div class="row justify-content-between">
+                                                <input required style="width: 49%;" class="reg_input form-control mr-sm-2" id="mode1_reg8" placeholder="0000 0000 0000 0000" aria-label="Значение регистра" th:field="*{register8RowData}">
+                                                <input required style="width: 49%;" class="reg_input form-control mr-sm-2" id="mode1_reg9" placeholder="0000 0000 0000 0000" aria-label="Значение регистра" th:field="*{register9RowData}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div style="list-style-type: none" class="row with_margin">
+                                        <div class="col-5">
+                                            <div>Регистр 10, 11: Смещение частоты от начала диапазона</div>
+                                            <div class="adder_register_info">1. ПЧ = (ВЧнд – ГЕТконв + смещение от НД)<br>2. Если величина получилась меньше нуля, то есть инверсия спектра. Аналогично расчет производится и для приёмного тракта.<br>Все величины частот задаются с шагом 10 КГц</div>
+                                        </div>
+                                        <div style="height: auto" class="col">
+                                            <div class="row justify-content-between">
+                                                <input required style="width: 49%;" class="reg_input form-control mr-sm-2" id="mode1_reg10" placeholder="0000 0000 0000 0000" aria-label="Значение регистра" th:field="*{register10RowData}">
+                                                <input required style="width: 49%;" class="reg_input form-control mr-sm-2" id="mode1_reg11" placeholder="0000 0000 0000 0000" aria-label="Значение регистра" th:field="*{register11RowData}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div style="list-style-type: none" class="row with_margin">
+                                        <div class="col-5">
+                                            <div>Регистр 12: Код Доплера на прием, частотообразование в конвертере ПРМ</div>
+                                            <div class="adder_register_info">D0 - D11: Код Доплера на прием (в дополнительном коде)<br>Код Доплера рассчитывается по формуле: D = ∆FD, где ∆FD – частотная поправка для 100 МГц, рассчитанная по формуле: ∆FD = (±1.2*10-5)*108 Гц.Для 100 МГц максимальная поправка: ∆F1200 = 1200 Гц. Шаг частотной поправки для 100МГц: ∆F1200 / 1200 = 1 Гц. Расчет и запись кода Доплера производится ПАУ 1 раз в минуту.</div>
+                                        </div>
+                                        <div style="height: auto" class="col">
+                                            <div class="row">
+                                                <input required class="reg_input form-control mr-sm-2" id="mode1_reg12" placeholder="0000 0000 0000 0000" aria-label="Значение регистра" th:field="*{register12RowData}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div style="list-style-type: none" class="row with_margin">
+                                        <div class="col-5">
+                                            <div>Регистр 17: Флаги работы</div>
+                                            <div class="adder_register_info">D2: Выбор сигнала для системы автосопровождения инф./ПБМ<br>D9: Режим приоритета ПБМ приём<br>D3: Автоматическая нормировка мощности выкл/вкл<br>D4: Задать частоты гетеродинов с ПАУ<br>D5 - D7: Количество каналов<br></div>
+                                        </div>
+                                        <div style="height: auto" class="col">
+                                            <div class="row">
+                                                <input required class="reg_input form-control mr-sm-2" id="mode1_reg17" placeholder="0000 0000 0000 0000" aria-label="Значение регистра" th:field="*{register17RowData}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div style="list-style-type: none" class="row with_margin">
+                                        <div class="col-5">
+                                            <div>Регистр 18: Управление каналами, конвертером</div>
+                                            <div class="adder_register_info">D8 - D9: Диапазон частот для конвертера (43500-43999.99 МГц / 44000-44499.99 МГц / 44500-44999.99 МГц / 45000-45499.99 МГц)<br>D10 - D11: Выбор канала для индикации светодиодами (1 - 4)</div>
+                                        </div>
+                                        <div style="height: auto" class="col">
+                                            <div class="row">
+                                                <input required class="reg_input form-control mr-sm-2" id="mode1_reg18" placeholder="0000 0000 0000 0000" aria-label="Значение регистра" th:field="*{register18RowData}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div style="list-style-type: none" class="row with_margin">
+                                        <div class="col-5">
+                                            <div>Регистр 19: Подстройка ОГ</div>
+                                            <div class="adder_register_info">D0 - D11: Код для подстройки ОГ<br>D15: Наличие внешней опорной частоты 10 МГц<br>D14: Запуск подстройки под внешнюю частоту 10 МГц. Бит автоматически сбрасывается при завершении калибровки<br>D13: Калибровка завершена успешно</div>
+                                        </div>
+                                        <div style="height: auto" class="col">
+                                            <div class="row">
+                                                <input required class="reg_input form-control mr-sm-2" id="mode1_reg19" placeholder="0000 0000 0000 0000" aria-label="Значение регистра" th:field="*{register19RowData}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div style="list-style-type: none" class="row with_margin">
+                                        <div class="col-5">
+                                            <div>Регистр 20: Отсчеты АЦП</div>
+                                            <div class="adder_register_info">D0: Выдавать отсчеты с АЦП в ПАУ<br>D2 - D5: Источник отсчетов (АЦП основного тракта (для БПФ), АЦП тракта Кулон (для БПФ), АЦП тракта ПБМ (для БПФ), Сигнальное созвездие основное Канал 1, Сигнальное созвездие основное Канал 2, Сигнальное созвездие основное Канал 3, Сигнальное созвездие основное Канал 4, Сигнальное созвездие ОС Канал 1 для ПКТ, Сигнальное созвездие ОС Канал 2 для ПКТ, Сигнальное созвездие ОС Канал 3 для ПКТ, Сигнальное созвездие ОС Канал 4 для ПКТ)<br>D6 - D7: Количество пар отсчетов в I/Q (2048, 4096, 8192)</div>
+                                        </div>
+                                        <div style="height: auto" class="col">
+                                            <div class="row">
+                                                <input required class="reg_input form-control mr-sm-2" id="mode1_reg20" placeholder="0000 0000 0000 0000" aria-label="Значение регистра" th:field="*{register20RowData}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+
+
+                            </div>
+                            <div class="h-25 col log_mode1 justify-content-between">
+
+                                <div>
+                                    <h6>Лог</h6>
+                                </div>
+
+                                <div style="padding: 5px; height: calc(75% + 9px)" class="log border overflow-auto" th:text="${mode1.getLog()}">
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="col-3 exist_mode1">
+                    <div style="height: 675px" class="container">
+                        <div style="height: 6%"  class="row">
+                            <div class="col">
+                                <h5>Сохранения</h5>
+                            </div>
+                        </div>
+                        <div class="row border" style="height: 94%">
+                            <div class="col"  >
+                                <div class="row">
+                                    <div class="col-10"><b>Создать новый режим</b></p></div>
+                                    <div class="col-2"><a th:href="@{/demo2}"  style="background-image: url('/img/AddButton.png'); background-size: contain; background-repeat: no-repeat; background-position: center; min-width: 20px; min-height: 20px" class="btn"></a></div>
+                                </div>
+                                <div class="row" th:each="mode1ForRequest : ${allModes1}">
+                                    <div class="col-10"><p th:text="${mode1ForRequest.getName}">Название режима 1</p></div>
+                                    <div class="col-2"><a th:href="@{/getMDKRPKT(id=${mode1ForRequest.getId})}"  style="background-image: url('/img/Edit.png'); background-size: contain; background-repeat: no-repeat; background-position: center; min-width: 20px; min-height: 20px" class="btn"></a></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="mode2" role="tabpanel" aria-labelledby="mode2-tab">
+        ...
+    </div>
+
+    <div class="tab-pane fade" id="mode3" role="tabpanel" aria-labelledby="mode3-tab">
+        ...
+    </div>
+
+    <div class="tab-pane fade" id="mode4" role="tabpanel" aria-labelledby="mode4-tab">
+        ...
+    </div>
+</div>
+
+</body>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://igorescobar.github.io/jQuery-Mask-Plugin/js/jquery.mask.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+<script>
+    let logUpdateIsNeed = false;
+    $(function() {
+        $.fn.bitMask = function() {
+            var applyMask = function() {
+                var maskPattern = 'ZZZZ ';
+                var mask = '';
+                var valueToMask = $(this).val();
+                var patternRepeatCount = Math.ceil(valueToMask.length / maskPattern.length);
+
+                for(var i = 0; i < patternRepeatCount; i++) {
+                    mask += maskPattern;
+                }
+
+                mask += maskPattern;
+                if(valueToMask.length < 20){
+                    var option = { translation: {
+                            'Z': { pattern: /[0-1]/}
+                        }};
+                    var pseudoElm = $('<input type="text"/>');
+                    pseudoElm.val(valueToMask);
+                    pseudoElm.mask(mask, option);
+                    $(this).val(pseudoElm.val());
+
+                }
+                else{
+                    let valToApdate = valueToMask.slice(0, -1)
+                    $(this).val(valToApdate);
+                }
+
+            };
+
+            $(this).each(function() {
+                var self = $(this);
+                self.on('keypress', function() {
+                    setTimeout(applyMask.bind(this), 1);
+                });
+
+                self.on('paste', function() {
+                    setTimeout(applyMask.bind(this), 1);
+                });
+
+            });
+        };
+
+
+        $('.reg_input').bitMask();
+
+    });
+
+    function* waitAndDo(times) {
+        while(logUpdateIsNeed) {
+
+            // Sleep
+            yield function(callback) {
+                setTimeout(callback, 1000);
+            }
+
+            // Do something here
+            console.log('Doing a request');
+        }
+    }
+
+
+
+</script>
+</html>

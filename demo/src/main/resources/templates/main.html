@@ -45,6 +45,14 @@
     function open_script(id){
         sendRequest("getScript", "POST", id)
     }
+
+    function open_mode(id){
+        sendRequest("getMode", "POST", id)
+    }
+
+    function run_mode(id){
+        sendRequest("runMode", "POST", id)
+    }
 </script>
 <body>
 <div class="col" width="100%">
@@ -53,22 +61,42 @@
         <a href="/addMode"><button  id="addMode">Добавить режим</button></a>
         <a href="/addScript"><button  id="addScript">Добавить сценарий</button></a>
     </div>
-    <div>
-        <div class="col" th:each="avaliableScript : ${scripts}">
-            <div class="row" th:attr="id=|script_${avaliableScript.getId}">
-                <b th:text="${avaliableScript.getName}">
-                    Сценарий 1
-                </b>
-                <a th:attr="href=|/getScript/${avaliableScript.getId}|"><button th:attr="id=|open_script_${avaliableScript.getId}|, onclick=|open_script(${avaliableScript.getId})|">
-                    Подробнее / Изменить
-                </button></a>
+    <div class="row">
+        <div style="width: 40%">
+            <div class="col" th:each="avaliableMode : ${modes}">
+                <div class="row" th:attr="id=|script_${avaliableMode.getId}">
+                    <b th:text="${avaliableMode.getName}">
+                        Сценарий 1
+                    </b>
+                    <a th:attr="href=|/getMode/${avaliableMode.getId}|"><button th:attr="id=|open_mode_${avaliableMode.getId}|, onclick=|open_mode(${avaliableMode.getId})|">
+                        Подробнее / Изменить
+                    </button></a>
 
-                <button th:attr="id=|run_script_${avaliableScript.getId}|">
-                    Запустить
-                </button>
+                    <button th:attr="id=|run_mode_${avaliableMode.getId}|, onclick=|run_mode(${avaliableMode.getId})|">
+                        Запустить
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div style="width: 40%">
+            <div class="col" th:each="avaliableScript : ${scripts}">
+                <div class="row" th:attr="id=|script_${avaliableScript.getId}">
+                    <b th:text="${avaliableScript.getName}">
+                        Сценарий 1
+                    </b>
+                    <a th:attr="href=|/getScript/${avaliableScript.getId}|"><button th:attr="id=|open_script_${avaliableScript.getId}|, onclick=|open_script(${avaliableScript.getId})|">
+                        Подробнее / Изменить
+                    </button></a>
+
+                    <button th:attr="id=|run_script_${avaliableScript.getId}|">
+                        Запустить
+                    </button>
+                </div>
             </div>
         </div>
     </div>
+
 </div>
 
 

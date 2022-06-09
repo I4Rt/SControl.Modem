@@ -8,6 +8,7 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 import javax.persistence.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +27,9 @@ public class Mode {
     private Long id;
 
     private String name;
+    private String modeValue;
+
+    private boolean isSet = false;
 
     @ManyToMany(cascade = { CascadeType.ALL })
     @JoinTable(
@@ -38,6 +42,10 @@ public class Mode {
     @ManyToMany(mappedBy = "modes")
     private Set<Script> scripts = new HashSet<>();
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "mode_data_id", referencedColumnName = "id")
+    private ModeData modeData;
+
     public JSONObject getJson(){
         JSONObject json= new JSONObject();
         JSONArray registersArrayId = new JSONArray();
@@ -47,11 +55,32 @@ public class Mode {
 
         json.put("id", this.id);
         json.put("name", this.name);
+        json.put("modeValue", this.modeValue);
         json.put("registers", registersArrayId);
 
         return json;
     }
 
+    public String calibrateData(){
+        modeData.sendModeData();
 
+        System.out.println("\n\n");
+        List<String> allAnswers =  new ArrayList<>();
+        String answer = "";
+        try {
+            for(Register register :registers){
+                    answer = register.sendData();
+                    allAnswers.add(answer);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for(int i = 0; i < allAnswers.size(); i++){
+            System.out.println(allAnswers.get(i));
+        }
+
+        return allAnswers.toString();
+    }
 
 }
