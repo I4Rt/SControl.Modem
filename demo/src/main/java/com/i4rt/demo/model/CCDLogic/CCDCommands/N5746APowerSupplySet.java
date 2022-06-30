@@ -1,17 +1,14 @@
 package com.i4rt.demo.model.CCDLogic.CCDCommands;
 
 import com.i4rt.demo.model.ReceiverTwoChannels;
-import com.i4rt.demo.model.algs.CRC16;
 import com.i4rt.demo.model.CCDLogic.CCD;
 import com.i4rt.demo.model.DataBin;
+import com.i4rt.demo.model.algs.FixPoint;
 import lombok.NoArgsConstructor;
 import org.apache.commons.codec.binary.Hex;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.List;
 
 @NoArgsConstructor
 public class N5746APowerSupplySet implements CCDCommand {
@@ -22,25 +19,15 @@ public class N5746APowerSupplySet implements CCDCommand {
 
     public static String sendData(String[] params) {
 
-        Long V =  Math.round(Double.parseDouble(params[0]) * 92233720);
-        Long A =  Math.round(Double.parseDouble(params[1]) * 92233720);
-
-
-        ByteBuffer bufferV = ByteBuffer.allocate(Long.BYTES);
-        bufferV.putLong(V);
-        String hexVStr = Hex.encodeHexString(bufferV.array());
-        ByteBuffer bufferA = ByteBuffer.allocate(Long.BYTES);
-        bufferA.putLong(A);
-        String hexAStr = Hex.encodeHexString(bufferA.array());
-        System.out.println(hexVStr);
-        System.out.println(hexAStr);
+        
 
 
         Boolean mode = (params[2]).equals("1");
 
-        String dataStr = "AA11" + hexVStr + hexAStr + (mode ? "01":"00") + "55".repeat(1005);
-        System.out.println(dataStr);
-        byte[] data = DataBin.generateDataToSend(dataStr);
+        String dataStr = "AA11" + Hex.encodeHexString(FixPoint.getFixPointDataFromStr(params[0])) + Hex.encodeHexString(FixPoint.getFixPointDataFromStr(params[1])) + (mode ? "01":"00") + "55".repeat(1005);
+
+        byte[] data = DataBin.convertDataFromHexStrToByteArray(dataStr);
+
         System.out.println("len: " + Hex.encodeHexString(data).length());
         System.out.println("str: " + Hex.encodeHexString(data));
 

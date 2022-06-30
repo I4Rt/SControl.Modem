@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.codec.binary.Hex;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 @NoArgsConstructor
 public class PXIStatusRequest implements CCDCommand {
@@ -21,7 +20,7 @@ public class PXIStatusRequest implements CCDCommand {
 
 
         String dataStr = "123400" + "55".repeat(1024 - 3);
-        byte[] data = DataBin.generateDataToSend(dataStr);
+        byte[] data = DataBin.convertDataFromHexStrToByteArray(dataStr);
         System.out.println("len: " + Hex.encodeHexString(data).length());
         System.out.println("str: " + Hex.encodeHexString(data));
 

@@ -18,8 +18,8 @@ public class CRC16 {
         }
         print += result;
         System.out.println(print);
-        byte[] crc = DataBin.generateDataToSend(print);
-        byte[] finalDataBin = DataBin.generateDataToSend(Hex.encodeHexString(bytes) + print);
+        byte[] crc = DataBin.convertDataFromHexStrToByteArray(print);
+        byte[] finalDataBin = DataBin.convertDataFromHexStrToByteArray(Hex.encodeHexString(bytes) + print);
         return finalDataBin;
         //Thread.sleep(5000);
     }

@@ -46,7 +46,7 @@ public class DataBin {
         this.resultData = "00018000000D3143" + ((this.mode.equals("modem")) ? "00" : "41") + this.positionHex.substring(2, 4) + this.positionHex.substring(0, 2) + this.mainPartHex.substring(2, 4) + this.mainPartHex.substring(0, 2);
         System.out.println(this.resultData);
 
-        this.data = generateDataToSend(this.resultData);
+        this.data = convertDataFromHexStrToByteArray(this.resultData);
     }
 
     public static String convertBinToHex(String binaryStr){
@@ -79,7 +79,7 @@ public class DataBin {
 
 
 
-    public static byte[] generateDataToSend(String rowData){
+    public static byte[] convertDataFromHexStrToByteArray(String rowData){
         ArrayList<Byte> temp_data = new ArrayList<>();
         for (int i = 0; i <= (rowData.length()/2 - 1) * 2; i+=2){
             temp_data.add((byte) Integer.parseInt(rowData.substring(i, i+2), 16));

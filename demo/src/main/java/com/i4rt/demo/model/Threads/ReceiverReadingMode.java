@@ -32,7 +32,7 @@ public class ReceiverReadingMode extends Thread {
                 Receiver receiver = new Receiver("192.168.1.125", 30020);
                 System.out.println("Sending read command:");
                 System.out.println("00018000000B3147000000");
-                byte[] dataToSend = DataBin.generateDataToSend("00018000000B3147000000");
+                byte[] dataToSend = DataBin.convertDataFromHexStrToByteArray("00018000000B3147000000");
                 byte[] answer = receiver.sendData(dataToSend);
                 System.out.println("Got data answer:");
                 System.out.println(Hex.encodeHexString(answer));
