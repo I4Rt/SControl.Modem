@@ -29,17 +29,21 @@ public class ReceiverReadingMode extends Thread {
                 mode.setSet(false);
 
 
-                Receiver receiver = new Receiver();
+                Receiver receiver = new Receiver("192.168.1.125", 30020);
                 System.out.println("Sending read command:");
                 System.out.println("00018000000B3147000000");
                 byte[] dataToSend = DataBin.generateDataToSend("00018000000B3147000000");
                 byte[] answer = receiver.sendData(dataToSend);
                 System.out.println("Got data answer:");
                 System.out.println(Hex.encodeHexString(answer));
-                //String rowAnswer =  Hex.encodeHexString(answer);
+                System.out.println(Hex.encodeHexString(answer).toString().substring(18,22));
 
-                mode.getModeData().setAnswer(answer);
-                mode.setSet(true);
+                //String rowAnswer =  Hex.encodeHexString(answer);
+                if(Hex.encodeHexString(answer).toString().substring(18,22).equals(mode.getModeData().getResultData().substring(18,22))){
+                    mode.getModeData().setAnswer(answer);
+                    mode.setSet(true);
+                }
+
 
 
 

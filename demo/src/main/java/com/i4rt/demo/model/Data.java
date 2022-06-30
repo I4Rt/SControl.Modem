@@ -55,7 +55,7 @@ public class Data {
     }
 
     public String sendData() throws IOException {
-        Receiver receiver = new Receiver();
+        Receiver receiver = new Receiver("192.168.1.125", 30020);
         answer = receiver.sendData(data);
         return Hex.encodeHexString( answer );
     }

@@ -1,19 +1,19 @@
 package com.i4rt.demo.controllers;
 
+import com.i4rt.demo.RequestObjects.ScriptCommandsRequest;
 import com.i4rt.demo.interfaces.ModeRepo;
 import com.i4rt.demo.interfaces.RegisterRepo;
 import com.i4rt.demo.interfaces.ScriptRepo;
-import com.i4rt.demo.model.Mode;
-import com.i4rt.demo.model.ModeData;
-import com.i4rt.demo.model.Register;
-import com.i4rt.demo.model.Script;
-import net.minidev.json.JSONObject;
+import com.i4rt.demo.interfaces.ScriptVersion2Repo;
+import com.i4rt.demo.model.*;
+import com.i4rt.demo.model.CCDLogic.CCDCommands.N5746APowerSupplySet;
+import com.i4rt.demo.model.CCDLogic.CCDCommands.PXIStatusRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -29,11 +29,14 @@ public class RestController {
 
     @Autowired
     private final ScriptRepo scriptRepo;
+    @Autowired
+    private final ScriptVersion2Repo scriptVersion2Repo;
 
-    public RestController(ModeRepo modeRepo, RegisterRepo registerRepo, ScriptRepo scriptRepo) {
+    public RestController(ModeRepo modeRepo, RegisterRepo registerRepo, ScriptRepo scriptRepo, ScriptVersion2Repo scriptVersion2Repo) {
         this.modeRepo = modeRepo;
         this.registerRepo = registerRepo;
         this.scriptRepo = scriptRepo;
+        this.scriptVersion2Repo = scriptVersion2Repo;
     }
 
 
@@ -83,6 +86,8 @@ public class RestController {
         modeRepo.deleteById(id);
         return "Режим удален";
     }
+
+
 
 
     @RequestMapping(value = "saveMode", method = RequestMethod.POST)
@@ -214,8 +219,46 @@ public class RestController {
 
         Mode mode = modeRepo.getById(id);
 
-        return mode.calibrateData();
+        return mode.execute();
     }
 
 
+    @RequestMapping(value = "/saveScript2", method = RequestMethod.POST)
+    public String saveScript2(@Valid @RequestBody ScriptVersion2 script){
+
+        System.out.println("saving script2");
+        System.out.println(script);
+
+        ScriptVersion2 result = scriptVersion2Repo.getScriptByName(script.getName());
+
+        if(result != null){
+            scriptVersion2Repo.updateScript(script.getName(), script.getRowCommandsJsonRow());
+            return "Сценарий " + script.getName() + " обновлен";
+        }
+        else{
+            scriptVersion2Repo.save(script);
+        }
+
+
+        return "Сценарий создан";
+    }
+
+    @RequestMapping(value = "/executeCommand", method = RequestMethod.POST)
+    public String executeCommand(@Valid @RequestBody ScriptCommandsRequest scriptCommandsRequest){
+
+        if(scriptCommandsRequest.getTo().equals("modem")){
+            Mode mode = modeRepo.getById(Long.parseLong(scriptCommandsRequest.getType()));
+            return mode.execute();
+        }
+        else if(scriptCommandsRequest.getTo().equals("CCD")){
+            if(scriptCommandsRequest.getType().equals("N5746APowerSupplySetRequest")){
+                return N5746APowerSupplySet.sendData(scriptCommandsRequest.getParams());
+            }
+            else if(scriptCommandsRequest.getType().equals("PXIStatusRequest")){
+                return PXIStatusRequest.sendData();
+            }
+
+        }
+        return "<p>ПРЕДУПРЕЖДЕНИЕ: неопознанная команда, попуск</p>";
+    }
 }

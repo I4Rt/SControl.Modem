@@ -33,7 +33,7 @@ public class ReceiverRunningTask extends Thread {
                 register.getData().setAnswer(null);
 
 
-                Receiver receiver = new Receiver();
+                Receiver receiver = new Receiver("192.168.1.125", 30020);
                 System.out.println("Sending:");
                 System.out.println(Hex.encodeHexString(register.getData().getData()));
                 byte[] answer = receiver.sendData(register.getData().getData());

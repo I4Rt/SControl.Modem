@@ -19,6 +19,8 @@
     .col>*, .row>*{
         margin: 5px;
     }
+
+
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
@@ -65,14 +67,14 @@
         <div style="width: 40%">
             <div class="col" th:each="avaliableMode : ${modes}">
                 <div class="row" th:attr="id=|script_${avaliableMode.getId}">
-                    <b th:text="${avaliableMode.getName}">
+                    <b th:text="${avaliableMode.getName}" style="width: 50%; text-align: center">
                         Сценарий 1
                     </b>
-                    <a th:attr="href=|/getMode/${avaliableMode.getId}|"><button th:attr="id=|open_mode_${avaliableMode.getId}|, onclick=|open_mode(${avaliableMode.getId})|">
+                    <a th:attr="href=|/getMode/${avaliableMode.getId}|" style="width: 30%;"><button style="width: 100%;" th:attr="id=|open_mode_${avaliableMode.getId}|, onclick=|open_mode(${avaliableMode.getId})|">
                         Подробнее / Изменить
                     </button></a>
 
-                    <button th:attr="id=|run_mode_${avaliableMode.getId}|, onclick=|run_mode(${avaliableMode.getId})|">
+                    <button style="width: 20%;" th:attr="id=|run_mode_${avaliableMode.getId}|, onclick=|run_mode(${avaliableMode.getId})|">
                         Запустить
                     </button>
                 </div>
@@ -82,16 +84,12 @@
         <div style="width: 40%">
             <div class="col" th:each="avaliableScript : ${scripts}">
                 <div class="row" th:attr="id=|script_${avaliableScript.getId}">
-                    <b th:text="${avaliableScript.getName}">
+                    <b th:text="${avaliableScript.getName}" style="width: 60%; text-align: center">
                         Сценарий 1
                     </b>
-                    <a th:attr="href=|/getScript/${avaliableScript.getId}|"><button th:attr="id=|open_script_${avaliableScript.getId}|, onclick=|open_script(${avaliableScript.getId})|">
+                    <a th:attr="href=|/getScript/${avaliableScript.getId}|" style="width: 40%;"><button style="width: 100%;" th:attr="id=|open_script_${avaliableScript.getId}|, onclick=|open_script(${avaliableScript.getId})|">
                         Подробнее / Изменить
                     </button></a>
-
-                    <button th:attr="id=|run_script_${avaliableScript.getId}|">
-                        Запустить
-                    </button>
                 </div>
             </div>
         </div>

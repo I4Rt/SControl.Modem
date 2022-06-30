@@ -61,8 +61,10 @@ public class Mode {
         return json;
     }
 
-    public String calibrateData(){
-        modeData.sendModeData();
+    public String execute(){
+        if( ! modeData.sendModeData()){
+            return "<div class = \"row\" style = \"width: fit-content; align-items: baseline\"><b style=\"color: red; font-weight: bold\">ERROR</b>: После 30 попыток не удалось установить заданный режим модему. Проверьте исправность оборудования и его подключение.<br></div>";
+        }
 
         System.out.println("\n\n");
         List<String> allAnswers =  new ArrayList<>();
@@ -80,7 +82,7 @@ public class Mode {
             System.out.println(allAnswers.get(i));
         }
 
-        return allAnswers.toString();
+        return "<b>Ответы модема: </b><div>" + allAnswers.toString() + "</div>";
     }
 
 }

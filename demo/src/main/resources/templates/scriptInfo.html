@@ -22,20 +22,82 @@
     .redirect{
         position: absolute;
         right: 10px;
-        bottom: 10px;
+        top: 10px;
+    }
+    .commands button{
+        width: 250px;
+        min-height: 36px;
+        border: 1px solid #777d87;
+        border-radius: 5px;
+    }
+    .commands button:hover{
+        background-color: lightgray;
+    }
+    input{
+        height: 34px;
+        border-radius: 5px;
+    }
+    .log *{
+        font-family: Arial;
+        font-size: 14px;
     }
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 <script>
-
+    let ready = true;
+    let commandsValue = 0;
+    let commands_ = new Array();
+    //console.log(data)
+    //test
+    let insideCommands = "[{\"to\":\"CCD\",\"order\":3,\"type\":\"PXIStatusRequest\",\"params\":[]},{\"to\":\"CCD\",\"order\":4,\"type\":\"PXIStatusRequest\",\"params\":[]},{\"to\":\"CCD\",\"order\":5,\"type\":\"PXIStatusRequest\",\"params\":[]},{\"to\":\"CCD\",\"order\":6,\"type\":\"N5746APowerSupplySetRequest\",\"params\":[\"1\",\"2\",\"3\"]}]"
+    commands_ = JSON.parse(insideCommands);
+    // test
     /*<![CDATA[*/
-    data = JSON.parse('[[${scriptJson}]]'.replaceAll('&quot;', '"'))
-    console.log(data);
+    data = JSON.parse('[[${scriptJson}]]'.replaceAll('&quot;', '"'));
+    dataModes = JSON.parse('[[${allModesJSON}]]'.replaceAll('&quot;', '"'));
+
+    console.log(dataModes);
+    commands_ = data;
 
     /*]]>*/
 
+    function addPXIStatusRequest(){
+        let id = "remove_PXIStatusRequest" + commandsValue;
+        let inputId = "PXIStatusRequest" + commandsValue;
+        $(".added").append("<div class='row' id='" + id + "' style='align-items: center; justify-content: space-between; width: 260px'><text style='max-width: 200px'>Запросить состояние PXI</text><button style='max-width: 36px'  onclick=\"removeCCDCommand(\'" + id + "\')\" >" +
+            "×" +
+            "</button></div>"
+        )
+        commandsValue += 1;
 
+
+    }
+
+    function removeCCDCommand(id){
+        $("#".concat(id)).remove()
+    }
+
+    function addN5746APowerSupplySetNoVals(){
+        let id = "remove_N5746APowerSupplySetRequest" + commandsValue;
+        let inputId = "N5746APowerSupplySetRequest" + commandsValue;
+        $(".added").append("<div class='row' id='" + id + "' style='align-items: center; justify-content: space-between; width: 500px'><text style='max-width: 200px'>Установить параметры пиатняи PXI</text><input type='text' class='V' placeholder='Напряженеие' id='" + id + "_V" + "'><input type='text' class='A' placeholder='Сила тока' id='" + id + "_A" + "'><input style='width: 36px' type='text' placeholder='mode' class='mode' id='" + id + "_mode" + "'> <button style='max-width: 36px'  onclick=\"removeCCDCommand(\'" + id + "\')\" >" +
+            "×" +
+            "</button></div>"
+        )
+        commandsValue += 1;
+
+    }
+    function addN5746APowerSupplySet(V, A, mode){
+        let id = "remove_N5746APowerSupplySetRequest" + commandsValue;
+        let inputId = "N5746APowerSupplySetRequest" + commandsValue;
+        $(".added").append("<div class='row' id='" + id + "' style='align-items: center; justify-content: space-between; width: 500px'><text style='max-width: 200px'>Установить параметры пиатняи PXI</text><input type='text' class='V' placeholder='Напряженеие' id='" + id + "_V" + "' value='" + V + "'><input type='text' class='A' placeholder='Сила тока' id='" + id + "_A" + "' value='" + A + "'><input style='width: 36px' type='text' placeholder='mode' class='mode' id='" + id + "_mode" + "' value='" + mode + "'> <button style='max-width: 36px'  onclick=\"removeCCDCommand(\'" + id + "\')\" >" +
+            "×" +
+            "</button></div>"
+        )
+        commandsValue += 1;
+
+    }
 
     function sendRequest(to, type, message){
         let feedback;
@@ -49,52 +111,17 @@
             .then((response) => {
                 scan_results = response;
                 console.log(response);
+
                 console.log(response.text().then(function (data){
-                    $(".answer").html(data)
+                    if(to == "/executeCommand"){
+                        $(".log").append(data);
+                        ready = true;
+                    }
+                    else{
+                        $(".answer").html(data)
+                    }
+
                 }));
-                /*
-                if(to == "startScan"){
-                    console.log(response.text().then(function (data){
-                        $(".text_info_cnt").html(data)
-                    }));
-                    $(".represent_loading").toggleClass("hidden");
-                    $(".represent").toggleClass("hidden");
-                    $("#log").append("<text>Сканирование окончено.</text>")
-                }
-                if(to == "rebootLidar"){
-                    $("#lidar_need_reboot").addClass("hidden");
-                    $("#lidar_need_config").removeClass("hidden");
-                    $("#lidar_ready").addClass("hidden");
-                    $("#lidar_wait_answer").addClass("hidden");
-                    $("#reboot").prop( "disabled", false );
-                    $("#configure").prop( "disabled", false );
-                    $("#start").prop( "disabled", true );
-                    $("#log").append("<text>Lidar перезапущен.</text>")
-
-                }
-                if(to == "configureLidar"){
-                    $("#lidar_need_reboot").addClass("hidden");
-                    $("#lidar_need_config").addClass("hidden");
-                    $("#lidar_ready").removeClass("hidden");
-                    $("#lidar_wait_answer").addClass("hidden");
-                    $("#reboot").prop( "disabled", false );
-                    $("#configure").prop( "disabled", false );
-                    $("#start").prop( "disabled", false );
-                    $("#log").append("<text>Lidar успешно сконфигурирован.</text>")
-                }
-
-                if(to == "runCart"){
-                    $("#log").append("<text>Каретка находится в конде рельс.</text>")
-                }
-                if(to == "stopCart"){
-                    $("#log").append("<text>Каретка остановлена.</text>")
-                }
-                if(to == "resetCart"){
-                    $("#log").append("<text>Каретка находится в конде рельс.</text>")
-                }
-                */
-
-
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -106,12 +133,9 @@
         $(".added").append("<button id=" + "'remove_" + id +"'" + " onclick=\"removeMode(\'remove_" + id + "\')\" >" +
             $(class_name).html() +
             "</button>"
-        )
-        console.log(data["modes"])
-        let temp_arr = data["modes"];
-        temp_arr.push(parseInt(id));
-        data["modes"] = temp_arr;
-        console.log(data["modes"])
+        );
+        commandsValue += 1;
+
     }
     function removeMode(id){
         console.log("removing");
@@ -122,21 +146,120 @@
         data["modes"] = temp_arr;
         //console.log(data["modes"])
     }
+    function loadUsageData(){
+        commands_.sort((a) => a["order"]);
+        console.log(JSON.stringify(commands_))
+        for(let i in commands_){
+            let elem = commands_[i];
+            if(elem["type"].includes("N5746APowerSupplySetRequest")){
+                addN5746APowerSupplySet(elem["params"][0], elem["params"][1], elem["params"][2])
+            }
+            else if(elem["type"].includes("PXIStatusRequest")){
+                addPXIStatusRequest()
+            }
+            else{
+                addModeToScript(commands_[i]["type"])
 
-    function save(){
-        let name = $("#script_name").val()
-        if (name != null){
-            data["name"] = name;
-            console.log("saving...");
-            console.log(JSON.stringify(data));
-            sendRequest("/updateScript", "POST", JSON.stringify(data))
-        }
-        else{
-            $(".answer").html("Введите название сценария")
+            }
         }
 
     }
+    function save(){
+        commands_ = new Array();
+        $('.answer').html("");
+        let commandsNumber = 0;
+        let errorMarker = 0;
+        if($("#script_name").val() == ""){
+            $('.answer').html("Введите имя режима");
+            return;
+        }
+        $(".added").children().each(
+            function (){
+                id = this.id;
+                commandsNumber += 1;
+                let newCommand = {"to": "", "order": 0, "type": "", "params": new Array()};
 
+                if(id.includes("N5746APowerSupplySetRequest")){
+
+
+                    if($("#" + id + " .V").val() != "" && $("#" + id + " .A").val() != "" && $("#" + id + " .mode").val() != ""){
+                        newCommand["to"] = "CCD";
+                        newCommand["order"] = commandsNumber;
+                        newCommand["type"] = "N5746APowerSupplySetRequest";
+                        newCommand["params"].push($("#" + id + " .V").val())
+                        newCommand["params"].push($("#" + id + " .A").val())
+                        newCommand["params"].push($("#" + id + " .mode").val())
+                    }
+                    else{
+                        $('.answer').html("Введены не все значения полей.");
+                        errorMarker = errorMarker - 1;
+                    }
+                }
+                else if(id.includes("PXIStatusRequest")){
+                    newCommand["to"] = "CCD";
+                    newCommand["order"] = commandsNumber;
+                    newCommand["type"] = "PXIStatusRequest";
+                }
+                else {
+
+                    newCommand["to"] = "modem";
+                    newCommand["order"] = commandsNumber;
+                    newCommand["type"] = id.replace("remove_", "");
+                    console.log(id)
+                }
+                console.log(newCommand["params"]);
+                if(!(newCommand["type"] == "")){
+                    commands_.push(newCommand);
+                }
+            });
+
+
+        console.log(JSON.stringify(commands_))
+        console.log("items!")
+
+        // if (name != null){
+        //     data["name"] = name;
+        //     console.log("saving...");
+        //     console.log(JSON.stringify(data));
+        //     sendRequest("/updateScript", "POST", JSON.stringify(data))
+        // }
+        // else{
+        //     $(".answer").html("Введите название сценария")
+        // }
+        dataToSend = {"name": $("#script_name").val(), "rowCommandsJsonRow": JSON.stringify(commands_)}
+        sendRequest("/saveScript2", "POST", JSON.stringify(dataToSend))
+    }
+    function checkAvailableToSend(){
+        if(ready == false)
+            return false;
+        else
+            return true;
+    }
+    function executeFrom(cur, to){
+        if(cur < to){
+            if(ready){
+                setTimeout(function() {
+                    ready = false;
+                    sendRequest("/executeCommand", "POST", JSON.stringify(commands_[cur]))
+                    executeFrom(cur + 1, to)
+                }, 1000)
+            }
+            else{
+                setTimeout(function() {
+                    executeFrom(cur, to)
+                }, 1000)
+            }
+
+        }
+
+    }
+    function execute(){
+        save();
+        executeFrom(0, commands_.length)
+    }
+
+
+    window.onload = loadUsageData;
 
 </script>
 <body>
@@ -144,26 +267,36 @@
     <div class="row"><h2>Сценарий </h2><input id="script_name" required type="text" th:field="*{name}"></div>
 </form>
 
-    <div class="row">
+    <div class="row" >
 
-        <div class="col" style="min-width: 50%; border-right: 2px dotted #000000">
-            <h4>Доступные режимы</h4>
+        <div class="col commands" style="max-height:400px; overflow-y: scroll; min-width: 50%; border-right: 2px dotted #000000">
+            <h4>Доступные команды</h4>
+            <h5>Команды к КПА</h5>
+            <button onclick=addPXIStatusRequest() id="requestPXIStatus"><b>Запросить статус PXI</b></button>
+            <button onclick=addTurnOffCCDRequest() disabled id="turnOffCCD"><b>Отключить КПА</b></button>
+            <button onclick=addN5746APowerSupplySetNoVals() id="setPowerSupplyN5746A"><b>Запрограммировать источник питания N5746A</b></button>
+            <button onclick=addPXIePowerSupplySet() disabled id="setPowerSupplyPXIe"><b>Запрограммировать источник питания PXIe-4112</b></button>
+            <button onclick=addMicrowaveSwitchValueSet() disabled id="setMicrowaveSwitchValue"><b>Установить значение СВЧ коммутатора</b></button>
+            <button onclick=addMicrowaveAttenuatorValueSet() disabled id="setMicrowaveAttenuatorValue"><b>Установить значение СВЧ аттенюатора</b></button>
+            <button onclick=addPeakFrequencyPowerGetter() disabled id="setPeakFrequencyPowerGetter"><b>Измерить частоту и мощность пика на спектре</b></button>
+            <h5>Команды к модему</h5>
                 <div class="col" th:each="avaliableMode : ${allModes}">
-                    <button th:attr="onclick=|addModeToScript(${avaliableMode.getId})|" th:id="${avaliableMode.getId}"><b>Добавить <text th:text="${avaliableMode.getName}"></text> </b></button>
+                    <button th:attr="onclick=|addModeToScript('${avaliableMode.getId}')|" th:id="${avaliableMode.getId}"><b>Запрограммировать <text th:text="${avaliableMode.getName}"></text> </b></button>
                 </div>
         </div>
-        <div  class="col added" style="min-width: 50%">
-            <h4>Используемые режимы</h4>
-                <div class="col" th:each="usedMode : ${allModesInUse}">
-                    <button th:attr="onclick=|removeMode('remove_${usedMode.getId}')|, id=|remove_${usedMode.getId}|"><b><text th:text="${usedMode.getName}"></text> </b></button>
-                </div>
+        <div  class="col commands added" style="max-height:400px; overflow-y: scroll; min-width: 50%">
+            <h4>Используемые команды</h4>
+<!--                <div class="col" th:each="usedMode : ${allModesInUse}">-->
+<!--                    <button th:attr="onclick=|removeMode('remove_${usedMode.getId}')|, id=|remove_${usedMode.getId}|"><b><text th:text="${usedMode.getName}" ></text> </b></button>-->
+<!--                </div>-->
         </div>
     </div>
-    <div class="row answer"></div>
+    <div class="row answer" style="min-height: 25px; margin: 5px"></div>
     <div class="row">
         <button onclick="save()" id="save">Сохранить</button>
+        <button onclick="execute()" id="Выполнить">Выполнить</button>
     </div>
-
+    <text class="col log" style="height: 240px; border: 2px solid black; align-items: flex-start; overflow-y: auto"></text>
 <a class="redirect" href="/main">Назад <--</a>
 </body>
 </html>

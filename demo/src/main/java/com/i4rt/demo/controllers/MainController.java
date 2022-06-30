@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -26,16 +27,19 @@ public class MainController {
     @Autowired
     private final ScriptRepo scriptRepo;
     @Autowired
+    private final ScriptVersion2Repo scriptVersion2RepoRepo;
+    @Autowired
     private final MDKRPKTRepo mdkrpktRepo;
 
 
 
 
-    public MainController(DataRepo dataRepo, RegisterRepo registerRepo, ModeRepo modeRepo, ScriptRepo scriptRepo, MDKRPKTRepo mdkrpktRepo) {
+    public MainController(DataRepo dataRepo, RegisterRepo registerRepo, ModeRepo modeRepo, ScriptRepo scriptRepo, ScriptVersion2Repo scriptVersion2RepoRepo, MDKRPKTRepo mdkrpktRepo) {
         this.dataRepo = dataRepo;
         this.registerRepo = registerRepo;
         this.modeRepo = modeRepo;
         this.scriptRepo = scriptRepo;
+        this.scriptVersion2RepoRepo = scriptVersion2RepoRepo;
         this.mdkrpktRepo = mdkrpktRepo;
     }
 
@@ -47,8 +51,10 @@ public class MainController {
     }
     @GetMapping("/main")
     public String getMain(Model model) {
-        model.addAttribute("scripts", scriptRepo.findAll());
+        model.addAttribute("scripts", scriptVersion2RepoRepo.findAll());
         model.addAttribute("modes", modeRepo.findAll());
+        //N5746APowerSupplySet test = new N5746APowerSupplySet();
+        //test.sendData();
         return "main";
     }
 
@@ -118,41 +124,66 @@ public class MainController {
     @GetMapping("/addScript")
     public String getCreateScriptForm(Model model) {
 
-        Script newScript = new Script();
+        ScriptVersion2 newScript = new ScriptVersion2();
         model.addAttribute("script", newScript);
-        List<Object> allModesInUse = Arrays.asList(newScript.getModes().toArray());
+        List<Object> allModesInUse = new ArrayList<>();
         System.out.println("\n\n\n");
         System.out.println(allModesInUse);
         System.out.println("\n\n\n");
 
-        JSONObject scriptJson = newScript.getJson();
-
-
+        //JSONObject scriptJson = newScript.getJson();
 
         List<Mode> allModes = modeRepo.findAll();
-        model.addAttribute("scriptJson",  scriptJson);
+        String allModesJSON = "[";
+        for(Mode mode: allModes){
+            String curMode = "{";
+            curMode += "\"id\": " + "\"" + mode.getId() + "\",";
+            curMode += "\"name\": " + "\"" + mode.getName() + "\"";
+            curMode += "},";
+            allModesJSON += curMode;
+
+        }
+        allModesJSON = allModesJSON.substring(0, allModesJSON.length() - 1);
+        allModesJSON += "]";
+
+        System.out.println(allModesJSON);
+        model.addAttribute("scriptJson",  newScript.getRowCommandsJsonRow());
         model.addAttribute("allModes",  allModes);
+        model.addAttribute("allModesJSON",  allModesJSON);
         model.addAttribute("allModesInUse",  allModesInUse);
-        return "addScript";
+        return "scriptInfo";
     }
 
     @GetMapping("/getScript/{id}")
     public String getScript(@PathVariable Long id, Model model) {
 
-        Script newScript = scriptRepo.getById(id);
-        model.addAttribute("script", newScript);
-        Set<Mode> allModesInUse = newScript.getModes() ;
+        ScriptVersion2 curScript = scriptVersion2RepoRepo.getById(id);
+        model.addAttribute("script", curScript);
+        List<Object> allModesInUse = new ArrayList<>(); // not ness, check usage in html
         System.out.println("\n\n\n");
         System.out.println(allModesInUse);
         System.out.println("\n\n\n");
 
-        JSONObject scriptJson = newScript.getJson();
+
 
         List<Mode> allModes = modeRepo.findAll();
-        model.addAttribute("scriptJson",  scriptJson);
-        model.addAttribute("allModes",  allModes);
-        model.addAttribute("allModesInUse",  allModesInUse);
+        String allModesJSON = "[";
+        for(Mode mode: allModes){
+            String curMode = "{";
+            curMode += "\"id\": " + "\"" + mode.getId() + "\",";
+            curMode += "\"name\": " + "\"" + mode.getName() + "\"";
+            curMode += "},";
+            allModesJSON += curMode;
 
+        }
+        allModesJSON = allModesJSON.substring(0, allModesJSON.length() - 1);
+        allModesJSON += "]";
+
+        System.out.println(allModesJSON);
+        model.addAttribute("scriptJson",  scriptVersion2RepoRepo.getById(id).getRowCommandsJsonRow());
+        model.addAttribute("allModes",  allModes);
+        model.addAttribute("allModesJSON",  allModesJSON);
+        model.addAttribute("allModesInUse",  allModesInUse);
         return "scriptInfo";
     }
 

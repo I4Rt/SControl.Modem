@@ -29,7 +29,7 @@ public class ReceiverSettingMode extends Thread {
                 mode.getModeData().setAnswer(null);
                 mode.setSet(false);
 
-                Receiver receiver = new Receiver();
+                Receiver receiver = new Receiver("192.168.1.125", 30020);
                 System.out.println("Sending mode assets:");
                 System.out.println(Hex.encodeHexString(mode.getModeData().getData()));
                 byte[] answer = receiver.sendData(mode.getModeData().getData());

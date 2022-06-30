@@ -91,9 +91,21 @@ public class DataBin {
         return data;
     }
 
+    public static byte[] convertHexStringToBin(String rowData) {
+        ArrayList<Byte> temp_data = new ArrayList<>();
+        for (int i = 0; i <= (rowData.length()/2 - 1) * 2; i+=2){
+            temp_data.add((byte) Integer.parseInt(rowData.substring(i, i+2), 16));
+        }
+        byte[] data = new byte[temp_data.size()];
+        for(int i = 0; i < temp_data.size(); i++){
+            data[i] = temp_data.get(i);
+        }
+        return data;
+    }
+
 
     public String sendData() throws IOException {
-        Receiver receiver = new Receiver();
+        Receiver receiver = new Receiver("192.168.1.125", 30020);
         byte[] answer = receiver.sendData(this.data);
         return Hex.encodeHexString(answer);
     }

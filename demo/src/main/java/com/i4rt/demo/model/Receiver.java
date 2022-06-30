@@ -8,17 +8,19 @@ public class Receiver {
     private InetAddress address;
 
     private byte[] bufSend;
-    private byte[] bufReceiver = new byte[11];
+    private byte[] bufReceiver = new byte[1024];
+    private Integer port;
 
-    public Receiver() throws UnknownHostException, SocketException {
+    public Receiver(String IP, Integer port) throws UnknownHostException, SocketException {
         socket = new DatagramSocket();
-        address = InetAddress.getByName("192.168.1.125");
+        address = InetAddress.getByName(IP);
+        this.port = port;
     }
 
     public byte[] sendData(byte[] msg) throws IOException {
         bufSend = msg;
         DatagramPacket packet
-                = new DatagramPacket(bufSend, bufSend.length, address, 30020);
+                = new DatagramPacket(bufSend, bufSend.length, address, port);
         System.out.println("presending");
         socket.send(packet);
         System.out.println("aftersending");
@@ -29,6 +31,20 @@ public class Receiver {
         System.out.println("afterreceiving");
 
         return bufReceiver;
+    }
+
+    public byte[] sendDataNoReceive(byte[] msg) throws IOException {
+        bufSend = msg;
+        DatagramPacket packet
+                = new DatagramPacket(bufSend, bufSend.length, address, port);
+        System.out.println("presending");
+        socket.send(packet);
+        System.out.println("aftersending");
+        packet = new DatagramPacket(bufReceiver, bufReceiver.length);
+        System.out.println("prereceiving");
+
+
+        return msg;
     }
 
     public void close() {
