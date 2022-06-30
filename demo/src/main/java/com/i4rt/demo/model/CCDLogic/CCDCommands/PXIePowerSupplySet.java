@@ -1,17 +1,16 @@
 package com.i4rt.demo.model.CCDLogic.CCDCommands;
 
-import com.i4rt.demo.model.ReceiverTwoChannels;
 import com.i4rt.demo.model.CCDLogic.CCD;
 import com.i4rt.demo.model.DataBin;
+import com.i4rt.demo.model.ReceiverTwoChannels;
 import com.i4rt.demo.model.algs.FixPoint;
 import lombok.NoArgsConstructor;
 import org.apache.commons.codec.binary.Hex;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 @NoArgsConstructor
-public class N5746APowerSupplySet implements CCDCommand {
+public class PXIePowerSupplySet implements CCDCommand {
 
     private String rowDataJsonString;
 
@@ -19,10 +18,10 @@ public class N5746APowerSupplySet implements CCDCommand {
 
     public static String sendData(String[] params) {
 
-        Boolean mode = (params[2]).equals("1");
-        System.out.println("param2: " + params[1]);
+        Boolean mode1 = (params[2]).equals("1");
+        Boolean mode2 = (params[5]).equals("1");
 
-        String dataStr = "AA11" + Hex.encodeHexString(FixPoint.getFixPointDataFromStr(params[0])) + Hex.encodeHexString(FixPoint.getFixPointDataFromStr(params[1])) + (mode ? "01":"00") + "55".repeat(1005);
+        String dataStr = "AA22" + Hex.encodeHexString(FixPoint.getFixPointDataFromStr(params[0])) + Hex.encodeHexString(FixPoint.getFixPointDataFromStr(params[1])) + (mode1 ? "01":"00") + Hex.encodeHexString(FixPoint.getFixPointDataFromStr(params[3])) + Hex.encodeHexString(FixPoint.getFixPointDataFromStr(params[4])) + (mode2 ? "01":"00") + "55".repeat(1024-36);
 
         byte[] data = DataBin.convertDataFromHexStrToByteArray(dataStr);
 

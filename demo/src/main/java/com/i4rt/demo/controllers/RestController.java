@@ -6,8 +6,7 @@ import com.i4rt.demo.interfaces.RegisterRepo;
 import com.i4rt.demo.interfaces.ScriptRepo;
 import com.i4rt.demo.interfaces.ScriptVersion2Repo;
 import com.i4rt.demo.model.*;
-import com.i4rt.demo.model.CCDLogic.CCDCommands.N5746APowerSupplySet;
-import com.i4rt.demo.model.CCDLogic.CCDCommands.PXIStatusRequest;
+import com.i4rt.demo.model.CCDLogic.CCDCommands.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -254,11 +253,20 @@ public class RestController {
             if(scriptCommandsRequest.getType().equals("N5746APowerSupplySetRequest")){
                 return N5746APowerSupplySet.sendData(scriptCommandsRequest.getParams());
             }
+            else if(scriptCommandsRequest.getType().equals("PXIePowerSupplySetRequest")){
+                return PXIePowerSupplySet.sendData(scriptCommandsRequest.getParams());
+            }
             else if(scriptCommandsRequest.getType().equals("PXIStatusRequest")){
                 return PXIStatusRequest.sendData();
             }
+            else if(scriptCommandsRequest.getType().equals("PeakFrequencyPowerGetRequest")){
+                return PeakFrequencyPowerGet.sendData(scriptCommandsRequest.getParams());
+            }
+            else if(scriptCommandsRequest.getType().equals("CCDTurnOffRequest")){
+                return CCDTurnOffRequest.sendData();
+            }
 
         }
-        return "<p>ПРЕДУПРЕЖДЕНИЕ: неопознанная команда, попуск</p>";
+        return "<div class = \"row\" style = \"width: fit-content; align-items: baseline\"><b style=\"color: #b8a500; font-weight: bold\">WARNING</b>: Неопознанная команда. Пропуск.<br></div>";
     }
 }
